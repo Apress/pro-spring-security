@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<security:global-method-security
+		secured-annotations="enabled" jsr250-annotations="enabled"
+		pre-post-annotations="enabled">
+		<!-- <security:protect-pointcut access="ROLE_ADMIN"
+			expression="execution(* com.apress.pss.terrormovies.service.MoviesService.*(..))" /> -->
+	</security:global-method-security>
+
+	<security:http auto-config="true" />
+
+	<security:authentication-manager>
+		<security:authentication-provider
+			user-service-ref="inMemoryUserServiceWithCustomUser" />
+	</security:authentication-manager>
+
+	<bean id="expressionHandler"
+		class="com.apress.pss.terrormovies.security.CustomWebSecurityExpressionHandler" />
+
+	<bean id="inMemoryUserServiceWithCustomUser"
+		class="com.apress.pss.terrormovies.spring.CustomInMemoryUserDetailsManager">
+		<constructor-arg>
+			<list>
+				<bean class="com.apress.pss.terrormovies.model.User">
+					<constructor-arg value="admin" />
+					<constructor-arg value="admin" />
+					<constructor-arg>
+						<list>
+							<bean
+								class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+								<constructor-arg value="ROLE_ADMIN" />
+							</bean>
+						</list>
+					</constructor-arg>
+					<constructor-arg value="Scarioni" />
+					<constructor-arg value="19" />
+				</bean>
+				<bean class="com.apress.pss.terrormovies.model.User">
+					<constructor-arg value="paco" />
+					<constructor-arg value="tous" />
+					<constructor-arg>
+						<list>
+							<bean
+								class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+								<constructor-arg value="ROLE_USER" />
+							</bean>
+						</list>
+					</constructor-arg>
+					<constructor-arg value="Miranda" />
+					<constructor-arg value="20" />
+				</bean>
+				<bean class="com.apress.pss.terrormovies.model.User">
+					<constructor-arg value="lucas" />
+					<constructor-arg value="fernandez" />
+					<constructor-arg>
+						<list>
+							<bean
+								class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+								<constructor-arg value="ROLE_VIP" />
+							</bean>
+							<bean
+								class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+								<constructor-arg value="ROLE_USER" />
+							</bean>
+						</list>
+					</constructor-arg>
+					<constructor-arg value="Silva" />
+					<constructor-arg value="20" />
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="moviesService" class="com.apress.pss.terrormovies.service.MoviesServiceImpl">
+		<security:intercept-methods>
+			<security:protect
+				method="com.apress.pss.terrormovies.service.MoviesService.*"
+				access="ROLE_ADMIN" />
+		</security:intercept-methods>
+	</bean>
+</beans>

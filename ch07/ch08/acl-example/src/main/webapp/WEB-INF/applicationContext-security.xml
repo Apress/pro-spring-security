@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	<security:http auto-config="true" />
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user authorities="ROLE_USER" name="car"
+					password="scarvarez" />
+				<security:user authorities="ROLE_ADMIN" name="mon"
+					password="scarvarez" />
+				<security:user authorities="ROLE_USER,ROLE_ADMIN"
+					name="bea" password="scarvarez" />
+			</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager>
+	<context:component-scan base-package="com.apress.pss.acl.services" />
+	<security:global-method-security
+		secured-annotations="enabled" access-decision-manager-ref="customAccessDecisionManager"
+		pre-post-annotations="enabled">
+		<security:expression-handler ref="customExpressionHandler" />
+	</security:global-method-security>
+
+	<bean id="customAccessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<property name="decisionVoters">
+			<list>
+				<ref bean="aclDeletePostVoter" />
+				<ref bean="aclUpdatePostVoter" />
+				<ref bean="aclReadPostVoter" />
+				<ref bean="preInvocationAuthorizationAdviceVoter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="preInvocationAuthorizationAdviceVoter"
+		class="org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter">
+		<constructor-arg>
+			<bean
+				class="org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice" />
+		</constructor-arg>
+	</bean>
+
+    <bean id="customPermissionEvaluator"
+		class="org.springframework.security.acls.AclPermissionEvaluator">
+		<constructor-arg ref="aclService" />
+	</bean>
+	
+	<bean id="customExpressionHandler"
+		class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+		<property name="permissionEvaluator" ref="customPermissionEvaluator" />
+	</bean>
+	
+</beans>

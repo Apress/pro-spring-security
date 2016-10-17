@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd http://www.springframework.org/schema/jdbc  
+        http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd">
+	<security:http auto-config="true">		
+		<security:intercept-url pattern="/*" access="ROLE_ADMINISTRATORS" />
+		<security:form-login/>
+	</security:http>
+	<security:authentication-manager>
+		<security:ldap-authentication-provider   user-dn-pattern="uid={0},ou=people" group-search-base="ou=groups" group-search-filter="(member={0})">
+			<security:password-compare></security:password-compare>
+		</security:ldap-authentication-provider>
+	</security:authentication-manager>
+    
+    <security:ldap-server url="ldap://localhost:10389/dc=example,dc=com" />
+</beans>

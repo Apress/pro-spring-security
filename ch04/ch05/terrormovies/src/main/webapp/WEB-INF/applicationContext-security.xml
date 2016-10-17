@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	<security:http auto-config="true"
+		access-decision-manager-ref="accessDecisionManager">
+		<security:intercept-url pattern="/admin/*"
+			access="ROLE_ADMIN" />
+		<security:intercept-url pattern="/movies/*"
+			access="ROLE_USER" />
+		<security:intercept-url pattern="/movies/*"
+			access="ROLE_GUEST" />
+	</security:http>
+
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user name="car" password="scarvarez"
+					authorities="ROLE_USER" />
+				<security:user name="mon" password="scarvarez"
+					authorities="ROLE_ADMIN" />
+				<security:user name="bea" password="scarvarez"
+					authorities="ROLE_GUEST" />
+			</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<bean id="accessDecisionManager"
+		class="org.springframework.security.access.vote.AffirmativeBased">
+		<constructor-arg>
+			<list>
+				<ref bean="roleVoter" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="roleVoter"
+		class="org.springframework.security.access.vote.RoleHierarchyVoter">
+		<constructor-arg>
+			<bean
+				class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+				<property name="hierarchy">
+					<value>
+						ROLE_ADMIN > ROLE_USER
+						ROLE_USER > ROLE_GUEST
+					</value>
+				</property>
+			</bean>
+		</constructor-arg>
+	</bean>
+</beans>

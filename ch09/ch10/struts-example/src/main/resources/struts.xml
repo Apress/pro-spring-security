@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.handle.exception" value="false" />
+
+
+	<package name="myPackage" extends="struts-default">
+		<action name="index" class="com.apress.pss.struts.IndexAction">
+			<result>/jsp/index.jsp</result>
+		</action>
+		<action name="helloWorld" class="helloWorldAction">
+			<result name="input">/jsp/index.jsp</result>
+			<result>/jsp/helloWorld.jsp</result>
+		</action>
+	</package>
+</struts>
